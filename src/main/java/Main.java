@@ -11,7 +11,9 @@ import java.util.stream.Collectors;
 public class Main {
     public static void main(String[] args) throws IOException {
 
-        System.out.println(Config.getIDs(Leagues.ITALIA_SERIE_A_C6.getRealname()));
+        List<String> ids = Config.getIDs(Leagues.ITALIA_SERIE_A_C6.getRealname());
+        Config.getGames(ids,Leagues.ITALIA_SERIE_A_C6.getRealname());
+
 
 
     }
