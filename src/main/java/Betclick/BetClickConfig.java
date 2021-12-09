@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Config {
+public class BetClickConfig {
 
     public static List<String> getIDs(String league) throws IOException {
         String url = "https://betclic.pt/futebol-s1/" + league;
@@ -48,21 +48,19 @@ public class Config {
         return ids;
     }
 
-    public static List<GameFootball> getGames (List<String> ids,String league) throws IOException{
+    public static List<GameFootball> getGames(List<String> ids, String league) throws IOException {
         List<GameFootball> jogos = new ArrayList<>();
-        for(int i = 0; i < ids.size(); i++) {
+        for (int i = 0; i < ids.size(); i++) {
             String url = "https://betclic.pt/futebol-s1/" + league + "/" + ids.get(i);
             Document jogo = Jsoup.connect(url).get();
-            String teams = jogo.getElementsByClass("scoreboard_contestantLabel").text();
-            String[] teams_separated = teams.split(" ");
-            GameFootball game = new GameFootball(1,teams_separated[0],teams_separated[1]);
+            List<Element> teams = jogo.getElementsByClass("scoreboard_contestantLabel");
+            GameFootball game = new GameFootball(1, teams.get(0).text(), teams.get(1).text());
             jogos.add(game);
             List<Element> tipos = jogo.getElementsByTag("sports-markets-single-market");
 
-            for(int j = 0; j < tipos.size(); j++){
+            for (int j = 0; j < tipos.size(); j++) {
                 String type = tipos.get(j).select("div[class=marketBox_head]").select("h2").text();
-                System.out.println(type);
-                if(type.equals("Resultado (Tempo Regulamentar)")) {
+                if (type.equals("Resultado (Tempo Regulamentar)")) {
                     List<String> odds = tipos.get(j)
                             .select("div[class=marketBox_lineSelection ng-star-inserted]")
                             .select("span[class^=oddValue]")
@@ -70,11 +68,10 @@ public class Config {
                             .collect(Collectors.toList());
                     String odd_home = odds.get(0);
                     String odd_away = odds.get(2);
-                    Odds odd = new Odds(type,odd_home,odd_away);
+                    Odds odd = new Odds(type, odd_home, odd_away);
                     game.getOdds().add(odd);
-                    System.out.println(odd);
-                }
-                else if(type.equals("Total de golos - acima/abaixo")){
+
+                } else if (type.equals("Total de golos - acima/abaixo")) {
                     List<String> odds = tipos.get(j)
                             .select("div[class=marketBox_lineSelection ng-star-inserted]")
                             .select("span[class^=oddValue]")
@@ -82,11 +79,10 @@ public class Config {
                             .collect(Collectors.toList());
                     String odd_home = odds.get(4);
                     String odd_away = odds.get(5);
-                    Odds odd = new Odds(type + " 2.5 golos",odd_home,odd_away);
+                    Odds odd = new Odds(type + " 2.5 golos", odd_home, odd_away);
                     game.getOdds().add(odd);
-                    System.out.println(odd);
-                }
-                else if(type.equals("As duas equipas marcam")){
+
+                } else if (type.equals("As duas equipas marcam")) {
                     List<String> odds = tipos.get(j)
                             .select("div[class=marketBox_lineSelection ng-star-inserted]")
                             .select("span[class^=oddValue]")
@@ -94,13 +90,13 @@ public class Config {
                             .collect(Collectors.toList());
                     String odd_home = odds.get(0);
                     String odd_away = odds.get(1);
-                    Odds odd = new Odds(type + " Sim/Não",odd_home,odd_away);
+                    Odds odd = new Odds(type + " Sim/Não", odd_home, odd_away);
                     game.getOdds().add(odd);
-                    System.out.println(odd);
+
                 }
             }
 
         }
-        return null;
+        return jogos;
     }
 }

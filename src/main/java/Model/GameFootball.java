@@ -62,6 +62,11 @@ public class GameFootball {
 
     @Override
     public String toString() {
-        return home_team + " vs " + away_team;
+
+        StringBuilder result = new StringBuilder(home_team + " vs " + away_team + "\n Odds:");
+        for(Odds odd : this.odds){
+            result.append("\n" + odd);
+        }
+        return result.toString();
     }
 }

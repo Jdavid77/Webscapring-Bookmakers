@@ -4,7 +4,6 @@ public class Odds {
 
     private String name;
     private String odd_home;
-
     private String odd_away;
 
     public Odds(String name, String odd_home, String odd_away) {
